@@ -1,0 +1,3 @@
+# Fabric admin identity files — NEVER commit these
+*
+!.gitignore

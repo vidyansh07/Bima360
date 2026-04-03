@@ -1,0 +1,104 @@
+version: "3.9"
+
+# BIMA360 — Local Development Stack
+# Fabric is started separately via: cd blockchain/network && ./network.sh up
+# Usage: docker compose up -d
+
+services:
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: bima360_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bima360}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-bima360pass}
+      POSTGRES_DB: ${POSTGRES_DB:-bima360}
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bima360} -d ${POSTGRES_DB:-bima360}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - bima360_net
+
+  redis:
+    image: redis:7-alpine
+    container_name: bima360_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 5s
+    networks:
+      - bima360_net
+
+  fastapi:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: bima360_fastapi
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-bima360}:${POSTGRES_PASSWORD:-bima360pass}@postgres:5432/${POSTGRES_DB:-bima360}
+      REDIS_URL: redis://redis:6379
+      ENVIRONMENT: development
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+    networks:
+      - bima360_net
+
+  nextjs:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: development
+    container_name: bima360_nextjs
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    depends_on:
+      - fastapi
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - bima360_net
+
+volumes:
+  postgres_data:
+    name: bima360_postgres_data
+  redis_data:
+    name: bima360_redis_data
+
+networks:
+  bima360_net:
+    name: bima360_network
+    driver: bridge
