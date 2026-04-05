@@ -14,7 +14,7 @@ from fastapi.responses import JSONResponse
 from backend.core.config import settings
 from backend.core.database import init_db
 from backend.core.redis_client import close_redis, init_redis
-from backend.routers import health
+from backend.routers import ai, auth, claims, health, payments, policies, uploads, users
 
 logging.basicConfig(
     level=logging.INFO if settings.ENVIRONMENT == "production" else logging.DEBUG,
@@ -71,10 +71,12 @@ async def global_exception_handler(request: Request, exc: Exception):
     )
 
 
-# ── Routers — uncomment as phases complete ───────────────────
+# ── Routers ───────────────────────────────────────────────────
 app.include_router(health.router)
-# Phase 01-B: app.include_router(auth.router, prefix="/api/v1/auth")
-# Phase 02:   app.include_router(ai.router,   prefix="/api/v1/ai")
-# Phase 02-03:app.include_router(policies.router, prefix="/api/v1/policies")
-# Phase 03:   app.include_router(claims.router,   prefix="/api/v1/claims")
-# Phase 03:   app.include_router(payments.router, prefix="/api/v1/payments")
+app.include_router(auth.router, prefix="/api/v1")
+app.include_router(ai.router, prefix="/api/v1")
+app.include_router(users.router, prefix="/api/v1")
+app.include_router(policies.router, prefix="/api/v1")
+app.include_router(claims.router, prefix="/api/v1")
+app.include_router(payments.router, prefix="/api/v1")
+app.include_router(uploads.router, prefix="/api/v1")

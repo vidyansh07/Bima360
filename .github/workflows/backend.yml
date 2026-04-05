@@ -1,0 +1,127 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - "backend/**"
+      - "pyproject.toml"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "backend/**"
+
+env:
+  PYTHON_VERSION: "3.12"
+  IMAGE_NAME: bima360-backend
+
+jobs:
+  lint-and-test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: bima360_test
+          POSTGRES_USER: bima360
+          POSTGRES_PASSWORD: testpass
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd="pg_isready -U bima360"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=5
+
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=5s
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: Install dependencies
+        run: |
+          pip install -r backend/requirements.txt
+          pip install pytest pytest-asyncio pytest-httpx httpx aiosqlite ruff
+
+      - name: Lint (ruff)
+        run: ruff check backend/
+
+      - name: Run tests
+        env:
+          DATABASE_URL: postgresql+asyncpg://bima360:testpass@localhost:5432/bima360_test
+          REDIS_URL: redis://localhost:6379/0
+          SECRET_KEY: test-secret-key-not-for-production
+          COGNITO_AGENT_USER_POOL_ID: us-east-1_test
+          COGNITO_AGENT_CLIENT_ID: test-client-id
+          COGNITO_USER_POOL_ID: us-east-1_test2
+          COGNITO_USER_CLIENT_ID: test-client-id2
+          AWS_DEFAULT_REGION: us-east-1
+          SARVAM_API_KEY: dummy
+          GROQ_API_KEY: dummy
+          RAZORPAY_KEY_ID: dummy
+          RAZORPAY_KEY_SECRET: dummy
+          CASHFREE_CLIENT_ID: dummy
+          CASHFREE_CLIENT_SECRET: dummy
+          S3_BUCKET_NAME: bima360-test
+          AWS_ACCESS_KEY_ID: dummy
+          AWS_SECRET_ACCESS_KEY: dummy
+          FABRIC_CHANNEL_NAME: mychannel
+          FABRIC_POLICY_CHAINCODE: policy
+          FABRIC_CLAIM_CHAINCODE: claim
+          PINATA_JWT: dummy
+        run: pytest backend/tests/ -v --tb=short
+
+  build-and-push:
+    name: Docker Build & Push
+    needs: lint-and-test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id:     ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region:            ${{ secrets.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to ECR
+        env:
+          ECR_REGISTRY:   ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: ${{ env.IMAGE_NAME }}
+          IMAGE_TAG:      ${{ github.sha }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+                       -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+                       -f backend/Dockerfile .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host:     ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key:      ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            docker pull ${{ steps.login-ecr.outputs.registry }}/${{ env.IMAGE_NAME }}:latest
+            docker compose -f /opt/bima360/docker-compose.prod.yml up -d --no-deps fastapi

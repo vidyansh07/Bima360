@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard":  "Dashboard",
+    "clients":    "My Clients",
+    "newPolicy":  "New Policy",
+    "claims":     "Claims",
+    "earnings":   "My Earnings",
+    "logout":     "Logout",
+    "welcome":    "Welcome"
+  },
+  "dashboard": {
+    "title":           "Overview",
+    "totalClients":    "Total Clients",
+    "activePolicies":  "Active Policies",
+    "pendingClaims":   "Pending Claims",
+    "commissionEarned":"Commission Earned"
+  },
+  "clients": {
+    "title":             "My Clients",
+    "addClient":         "Add Client",
+    "searchPlaceholder": "Search by name or phone…",
+    "noClients":         "No clients found",
+    "col": {
+      "name":     "Name",
+      "phone":    "Phone",
+      "location": "Location",
+      "kyc":      "KYC Status",
+      "policies": "Policies"
+    }
+  },
+  "wizard": {
+    "title": "New Policy",
+    "steps": {
+      "kyc":           "KYC Details",
+      "riskScore":     "Risk Score",
+      "planSelection": "Select Plan",
+      "payment":       "Payment"
+    },
+    "kyc": {
+      "fullName":    "Full Name",
+      "phone":       "Mobile Number",
+      "aadhaar":     "Aadhaar Number",
+      "dob":         "Date of Birth",
+      "district":    "District",
+      "state":       "State",
+      "occupation":  "Occupation",
+      "annualIncome":"Annual Income (₹)",
+      "continue":    "Continue"
+    },
+    "riskScore": {
+      "analyzing":       "Analysing risk profile…",
+      "analyzingSubtext":"This usually takes a few seconds",
+      "riskScore":       "Risk Score",
+      "risk":            "Risk",
+      "viewPlans":       "View Recommended Plans"
+    },
+    "plan": {
+      "subtitle":     "Choose a plan for your client",
+      "recommended":  "Recommended",
+      "perYear":      "/ year",
+      "cover":        "Cover",
+      "proceed":      "Proceed to Payment"
+    },
+    "payment": {
+      "summary":   "Order Summary",
+      "plan":      "Plan",
+      "customer":  "Customer",
+      "coverage":  "Coverage",
+      "premium":   "Annual Premium",
+      "payNow":    "Pay Now"
+    },
+    "success": {
+      "title":     "Policy Issued Successfully!",
+      "subtitle":  "The policy has been recorded on blockchain and the customer will receive SMS confirmation.",
+      "newPolicy": "Issue Another Policy"
+    }
+  },
+  "userPortal": {
+    "logout": "Logout",
+    "policies": {
+      "title":       "My Policies",
+      "noPolicies":  "No policies found",
+      "premium":     "Premium Paid",
+      "coverage":    "Sum Insured",
+      "blockchainTx":"Blockchain TX"
+    }
+  }
+}

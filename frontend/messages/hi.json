@@ -1,0 +1,88 @@
+{
+  "nav": {
+    "dashboard":  "डैशबोर्ड",
+    "clients":    "मेरे ग्राहक",
+    "newPolicy":  "नई पॉलिसी",
+    "claims":     "दावे",
+    "earnings":   "मेरी कमाई",
+    "logout":     "लॉग आउट",
+    "welcome":    "स्वागत है"
+  },
+  "dashboard": {
+    "title":           "सारांश",
+    "totalClients":    "कुल ग्राहक",
+    "activePolicies":  "सक्रिय पॉलिसियाँ",
+    "pendingClaims":   "लंबित दावे",
+    "commissionEarned":"अर्जित कमीशन"
+  },
+  "clients": {
+    "title":             "मेरे ग्राहक",
+    "addClient":         "ग्राहक जोड़ें",
+    "searchPlaceholder": "नाम या फ़ोन से खोजें…",
+    "noClients":         "कोई ग्राहक नहीं मिला",
+    "col": {
+      "name":     "नाम",
+      "phone":    "फ़ोन",
+      "location": "स्थान",
+      "kyc":      "KYC स्थिति",
+      "policies": "पॉलिसियाँ"
+    }
+  },
+  "wizard": {
+    "title": "नई पॉलिसी",
+    "steps": {
+      "kyc":           "KYC विवरण",
+      "riskScore":     "जोखिम स्कोर",
+      "planSelection": "योजना चुनें",
+      "payment":       "भुगतान"
+    },
+    "kyc": {
+      "fullName":    "पूरा नाम",
+      "phone":       "मोबाइल नंबर",
+      "aadhaar":     "आधार नंबर",
+      "dob":         "जन्म तिथि",
+      "district":    "जिला",
+      "state":       "राज्य",
+      "occupation":  "व्यवसाय",
+      "annualIncome":"वार्षिक आय (₹)",
+      "continue":    "आगे बढ़ें"
+    },
+    "riskScore": {
+      "analyzing":       "जोखिम प्रोफ़ाइल का विश्लेषण हो रहा है…",
+      "analyzingSubtext":"इसमें कुछ सेकंड लग सकते हैं",
+      "riskScore":       "जोखिम स्कोर",
+      "risk":            "जोखिम",
+      "viewPlans":       "अनुशंसित योजनाएं देखें"
+    },
+    "plan": {
+      "subtitle":     "अपने ग्राहक के लिए एक योजना चुनें",
+      "recommended":  "अनुशंसित",
+      "perYear":      "/ वर्ष",
+      "cover":        "कवरेज",
+      "proceed":      "भुगतान पर जाएं"
+    },
+    "payment": {
+      "summary":   "ऑर्डर सारांश",
+      "plan":      "योजना",
+      "customer":  "ग्राहक",
+      "coverage":  "बीमा राशि",
+      "premium":   "वार्षिक प्रीमियम",
+      "payNow":    "अभी भुगतान करें"
+    },
+    "success": {
+      "title":     "पॉलिसी सफलतापूर्वक जारी की गई!",
+      "subtitle":  "पॉलिसी ब्लॉकचेन पर दर्ज कर दी गई है और ग्राहक को SMS पुष्टि मिलेगी।",
+      "newPolicy": "एक और पॉलिसी जारी करें"
+    }
+  },
+  "userPortal": {
+    "logout": "लॉग आउट",
+    "policies": {
+      "title":       "मेरी पॉलिसियाँ",
+      "noPolicies":  "कोई पॉलिसी नहीं मिली",
+      "premium":     "भुगतान किया प्रीमियम",
+      "coverage":    "बीमा राशि",
+      "blockchainTx":"ब्लॉकचेन TX"
+    }
+  }
+}

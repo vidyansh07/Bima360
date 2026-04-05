@@ -11,6 +11,7 @@ python-jose[cryptography]==3.3.0
 boto3==1.35.87
 langchain==0.3.12
 langchain-community==0.3.12
+langchain-openai==0.2.14
 httpx==0.28.1
 razorpay==1.4.2
 sentry-sdk[fastapi]==2.19.2
